@@ -1,6 +1,6 @@
 // lagrange_test.c
 // Author: Jonah Miller (jonah.maxwell.miller@gmail.com)
-// Time-stamp: <2017-03-27 18:19:31 (jmiller)>
+// Time-stamp: <2017-03-27 19:00:26 (jmiller)>
 
 // This is code for performing a simple test of the lagrange library.
 // We test the 2D version of the interpolation. 
@@ -13,11 +13,12 @@
 
 #define XMIN -1.0
 #define XMAX 1.0
-#define NX_COARSE 20
-#define NX_FINE 100
-#define DX_COARSE (XMAX-XMIN)/NX_COARSE
-#define DX_FINE (XMAX-XMIN)/NX_FINE
-#define FILENAME "test.out"
+#define NX_COARSE 21
+#define NX_FINE 101
+#define DX_COARSE (XMAX-XMIN)/(NX_COARSE-1)
+#define DX_FINE (XMAX-XMIN)/(NX_FINE-1)
+#define FILENAME_FULL "test_full.out"
+#define FILENAME_FO "test_fo.out"
 
 double xyn(double x, double y) {
   return pow(x,4.) - pow(y,4.) + 0.5*pow(x*y,3.);
@@ -30,11 +31,14 @@ int main(int argc, char* argv[]) {
   double* z_coarse;
   double x_fine[NX_FINE];
   double z_fine[NX_FINE*NX_FINE];
-  double z_interp[NX_FINE*NX_FINE];
-  double error;
-  double l2_error=0.;
+  double z_interp_full[NX_FINE*NX_FINE];
+  double z_interp_fo[NX_FINE*NX_FINE];
+  double error_fo,error_full;
+  double l2_error_fo=0.;
+  double l2_error_full=0.;
   double l2_error_denom=0.;
-  double max_error=0.;
+  double max_error_full=0.;
+  double max_error_fo=0.;
 
   if (argc < 3) {
     printf("usage %s order_x order_y\n", argv[0]);
@@ -51,13 +55,14 @@ int main(int argc, char* argv[]) {
 	   NX_COARSE-1);
   }
 
-  printf("Beginning test with:\n"
-	 "\torder in x = %d\n"
-	 "\torder in y = %d.\n",
-	 order_x,order_y);
   printf("We compare to the analytic function\n"
 	 "x^4 - y^4 + 0.5*(x*y)**4\n"
-	 "on the domain [-1,1]x[-1,1].\n");
+	 "on the domain [-1,1]x[-1,1].\n"
+	 "For FULL Lagrange polynomials of order:\n"
+	 "\t%d in x\n\t%d in y\n"
+	 "and FIXED ORDER Lagrange polynomials of order:\n"
+	 "\t%d in x\n\t%d in y\n",
+	 NX_COARSE,NX_COARSE,order_x,order_y);
 
   printf("Preparing grids.\n");
   x_coarse = (double *)malloc(sizeof(double)*NX_COARSE);
@@ -78,7 +83,7 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < NX_FINE; i++) {
     for (int j = 0; j < NX_FINE; j++) {
       iflat = index_2D_to_1D(i,NX_FINE,j,NX_FINE);
-      z_fine[iflat] = xyn(x_coarse[i],x_coarse[j]);
+      z_fine[iflat] = xyn(x_fine[i],x_fine[j]);
     }
   }
 
@@ -86,35 +91,54 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < NX_FINE; i++) {
     for (int j = 0; j < NX_FINE; j++) {
       iflat = index_2D_to_1D(i,NX_FINE,j,NX_FINE);
-      z_interp[iflat] = lagrange_interp_2Dfo(x_fine[i],
-					     x_fine[i],
-					     order_x,order_y,
-					     x_coarse, NX_COARSE,
-					     x_coarse, NX_COARSE,
-					     z_coarse);
-      error = z_interp[iflat] - z_fine[iflat];
-      l2_error += error*error;
+      z_interp_fo[iflat] = lagrange_interp_2Dfo(x_fine[i],
+						x_fine[j],
+						order_x,order_y,
+						x_coarse, NX_COARSE,
+						x_coarse, NX_COARSE,
+						z_coarse);
+      z_interp_full[iflat] = lagrange_interp_2D(x_fine[i],x_fine[j],
+						x_coarse, NX_COARSE,
+						x_coarse, NX_COARSE,
+						z_coarse);
+      error_fo = z_interp_fo[iflat] - z_fine[iflat];
+      error_full = z_interp_full[iflat] - z_fine[iflat];
+      l2_error_fo += error_fo*error_fo;
+      l2_error_full += error_full*error_full;
       l2_error_denom += 1.*1.;
-      max_error = fmax(error,max_error);
+      max_error_fo = fmax(error_fo,max_error_fo);
+      max_error_full = fmax(error_full,max_error_full);
     }
   }
-  l2_error /= l2_error_denom;
-  printf("\tMax error = %lf\n\tL2 error = %lf\n",
-	 max_error,l2_error);
+  l2_error_fo = sqrt(l2_error_fo/l2_error_denom);
+  l2_error_full = sqrt(l2_error_full/l2_error_denom);
+  printf("\tMax error = %lf\n\tL2 error = %lf\n"
+	 "\tMax error fixed order %lf\n"
+	 "\tL2 error fixed order %lf\n",
+	 max_error_full,l2_error_full,
+	 max_error_fo,l2_error_fo);
 
-  printf("Creating output file.\n");
-  FILE *fp;
-  fp = fopen(FILENAME,"w");
-  fprintf(fp,"#i\tj\tx\ty\tz\tz_interp\n");
-  fprintf(fp,"#NX = NY = %d\n",NX_FINE);
+  printf("Creating output files.\n");
+  FILE *fp_full;
+  FILE *fp_fo;
+  fp_full = fopen(FILENAME_FULL,"w");
+  fp_fo = fopen(FILENAME_FO,"w");
+  fprintf(fp_full,"#i\tj\tx\ty\tz\tz_interp\n");
+  fprintf(fp_fo,"#i\tj\tx\ty\tz\tz_interp\n");
+  fprintf(fp_full,"#NX = NY = %d\n",NX_FINE);
+  fprintf(fp_fo,"#NX = NY = %d\n",NX_FINE);
   for (int i = 0; i < NX_FINE; i++) {
     for (int j = 0; j < NX_FINE; j++) {
       iflat = index_2D_to_1D(i,NX_FINE,j,NX_FINE);
-      fprintf(fp,"%d\t%d\t%lf\t%lf\t%lf\t%lf\n",
+      fprintf(fp_fo,"%d\t%d\t%lf\t%lf\t%lf\t%lf\n",
 	      i,j,x_fine[i],x_fine[j],
-	      z_fine[iflat],z_interp[iflat]);
+	      z_fine[iflat],z_interp_fo[iflat]);
+      fprintf(fp_full,"%d\t%d\t%lf\t%lf\t%lf\t%lf\n",
+	      i,j,x_fine[i],x_fine[j],
+	      z_fine[iflat],z_interp_full[iflat]);
     }
   }
-  fclose(fp);
+  fclose(fp_fo);
+  fclose(fp_full);
   return 0;
 }
