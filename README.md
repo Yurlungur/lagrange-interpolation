@@ -6,7 +6,7 @@ Simple library for Lagrange Interpolation in 1D, 2D, and 3D on a
 Cartesian product grid. Written in C for maximum compatibility. The
 plot below shows the error for piecewise 2nd-order using this library:
 
-![2nd-order interpolation](hthttps://raw.githubusercontent.com/Yurlungur/lagrange-interpolation/master/images/test_fo.png)
+![2nd-order interpolation](https://raw.githubusercontent.com/Yurlungur/lagrange-interpolation/master/images/test_fo.png)
 
 ## Installation
 
