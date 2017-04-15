@@ -1,6 +1,6 @@
 // lagrange.c
 // Author: Jonah Miller (jonah.maxwell.miller@gmail.com)
-// Time-stamp: <2017-03-27 18:15:13 (jmiller)>
+// Time-stamp: <2017-03-30 21:07:11 (jmiller)>
 
 #include "lagrange.h"
 #include <assert.h>

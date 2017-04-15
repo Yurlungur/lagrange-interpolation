@@ -1,12 +1,15 @@
 // lagrange.h
 // Author: Jonah Miller (jonah.maxwell.miller@gmail.com)
-// Time-stamp: <2017-03-27 17:42:49 (jmiller)>
+// Time-stamp: <2017-04-15 12:46:27 (jmiller)>
 
 // This is a library for performing Lagrange interpolation of
 // polynomials on (not necessarily uniform) Cartesian product grids.
 // Note we do not perform a bounds check. If you decide to use
 // these polynomials to extrapolate, that's on you.
 // ----------------------------------------------------------------------
+
+#ifndef LAGRANGE_H
+#define LAGRANGE_H
 
 // max and min because the ones in cstdlib can often be borked
 inline int min(int a, int b) {return a<b ? a : b;}
@@ -112,3 +115,4 @@ double lagrange_interp_3Dfo(double x, double y, double z,
 			    const double z_values[], int num_z,
 			    const double f_values[]);
 
+#endif // LAGRANGE_H

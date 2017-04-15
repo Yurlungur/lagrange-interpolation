@@ -1,6 +1,6 @@
 // lagrange_test.c
 // Author: Jonah Miller (jonah.maxwell.miller@gmail.com)
-// Time-stamp: <2017-03-28 11:43:19 (jmiller)>
+// Time-stamp: <2017-04-15 12:42:24 (jmiller)>
 
 // This is code for performing a simple test of the lagrange library.
 // We test the 2D version of the interpolation. 
