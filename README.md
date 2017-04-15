@@ -8,6 +8,18 @@ plot below shows the error for piecewise 2nd-order interpolation using this libr
 
 ![2nd-order interpolation](https://raw.githubusercontent.com/Yurlungur/lagrange-interpolation/master/images/test_fo.png)
 
+The plot blow shows the error for piecewise fourth-order interpolation
+of the function sin(5x) on the evenly-spaced interval [-pi,pi] using
+this library:
+
+![4th-order interpolation](https://raw.githubusercontent.com/Yurlungur/lagrange-interpolation/master/images/convergence_slice.png)
+
+The plot below shows the norm of the error for the interpolation of
+the function sin(5x)cos(3y) on the evenly spaced domain [-pi,pi]^2
+using 2nd, 4th, and 6th order interpolation.
+
+![4th-order interpolation](https://raw.githubusercontent.com/Yurlungur/lagrange-interpolation/master/images/convergence_norm.png)
+
 ## Installation
 
 This code is simple enough that you can just copy-paste `lagrange.c`
