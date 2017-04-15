@@ -8,9 +8,9 @@ plot below shows the error for piecewise 2nd-order interpolation using this libr
 
 ![2nd-order interpolation](https://raw.githubusercontent.com/Yurlungur/lagrange-interpolation/master/images/test_fo.png)
 
-The plot blow shows the error for piecewise fourth-order interpolation
-of the function sin(5x) on the evenly-spaced interval [-pi,pi] using
-this library:
+The plot blow shows the error (rescaled by the grid spacing) for
+piecewise fourth-order interpolation of the function sin(5x) on the
+evenly-spaced interval [-pi,pi] using this library:
 
 ![4th-order interpolation](https://raw.githubusercontent.com/Yurlungur/lagrange-interpolation/master/images/convergence_slice.png)
 
